@@ -16,4 +16,4 @@ jobs:
           pip install torch torchvision
 
       - name: Execute ML Task
-        run: python train.py
+        run: python3 train.py
