@@ -1,6 +1,7 @@
 # Self-Hosted-GitHub-Action-Runner-on-a-GPU
 This activity is designed to take a "Learning by Doing" approach. It moves from the conceptual understanding of GitHub Action Runners to a hands-on implementation of a GPU-accelerated Machine Learning (ML) task.
 
+
 ---
 
 ## Activity: The "Neural Sprint"
