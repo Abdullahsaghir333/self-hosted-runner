@@ -1,19 +1,39 @@
-name: GPU Accelerated Training
+name: Colab T4 GPU Training
 
 on: [push]
 
 jobs:
-  train-on-gpu:
-    # This targets your cloud instance specifically
-    runs-on: [self-hosted, gpu-runner]
+  train:
+    # Colab runner must be configured with labels: ml-runner,gpu-runner
+    # Example config label command:
+    # ./config.sh ... --labels ml-runner,gpu-runner
+    runs-on: [self-hosted, ml-runner, gpu-runner]
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
+      - name: Ensure dependencies
         run: |
-          pip install torch torchvision
+          # Colab generally has torch preinstalled; install only if missing.
+          if python - <<'PY'
+          import importlib.util
+          missing = [m for m in ("torch", "torchvision") if importlib.util.find_spec(m) is None]
+          if missing:
+              raise SystemExit(1)
+          print("Torch dependencies already available.")
+          PY
+          then
+            echo "Skipping install."
+          else
+            python -m pip install --upgrade pip
+            pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+          fi
 
-      - name: Execute ML Task
-        run: python3 train.py
+      - name: Show runner and accelerator info
+        run: |
+          echo "Runner: $RUNNER_NAME"
+          nvidia-smi
+
+      - name: Execute ML task
+        run: python train.py
